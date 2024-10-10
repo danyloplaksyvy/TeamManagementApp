@@ -11,17 +11,25 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.NavController
+import com.example.teammanagementapp.navigation.Graph
+import com.example.teammanagementapp.navigation.RootNavigationGraph
+import com.example.teammanagementapp.ui.theme.MyTheme
 import com.example.teammanagementapp.ui.theme.TeamManagementAppTheme
+import com.example.teammanagementapp.view.authentication.ForgotScreen
+import com.example.teammanagementapp.view.authentication.SignInScreen
+import com.example.teammanagementapp.view.authentication.SignUpScreen
+import com.example.teammanagementapp.view.authentication.StartAuthScreen
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            TeamManagementAppTheme {
+            MyTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                        Modifier.padding(innerPadding)
-
+                    Modifier.padding(innerPadding)
+                    RootNavigationGraph(startDestination = Graph.AUTH)
                 }
             }
         }

@@ -1,37 +1,59 @@
 package com.example.teammanagementapp.view.authentication
 
+import android.widget.Toast
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.DriveFileRenameOutline
 import androidx.compose.material.icons.outlined.Email
 import androidx.compose.material.icons.outlined.Password
+import androidx.compose.material.icons.outlined.Visibility
+import androidx.compose.material.icons.outlined.VisibilityOff
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.teammanagementapp.Screens
+import com.example.teammanagementapp.viewmodel.AuthViewModel
 
-@Preview(showBackground = true)
 @Composable
-fun SignUpScreen(navController: NavController) {
+fun SignUpScreen(navController: NavController, authViewModel: AuthViewModel = viewModel()) {
+
+    val context = LocalContext.current
+
+    val emailFieldState = remember { mutableStateOf("") }
+    val passwordFieldState = remember { mutableStateOf("") }
+    val confirmPasswordFieldState = remember { mutableStateOf("") }
+    var passwordVisibility by remember { mutableStateOf(false) }
+
+    val errorMessage by authViewModel.errorMessage.collectAsState()
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -51,52 +73,80 @@ fun SignUpScreen(navController: NavController) {
             fontWeight = FontWeight.Normal,
             modifier = Modifier.padding(16.dp)
         )
-//        OutlinedTextField(
-//            value = "",
-//            onValueChange = {},
-//            label = { Text("Full name") },
-//            leadingIcon = {
-//                Icon(
-//                    Icons.Outlined.DriveFileRenameOutline, "Name"
-//                )
-//            },
-//            shape = RoundedCornerShape(36.dp),
-//            modifier = Modifier
-//                .fillMaxWidth()
-//                .padding(vertical = 8.dp)
-//        )
         OutlinedTextField(
-            value = "",
-            onValueChange = {},
+            value = emailFieldState.value,
+            onValueChange = { emailFieldState.value = it },
             label = { Text("Email") },
             leadingIcon = { Icon(Icons.Outlined.Email, "Email") },
             shape = RoundedCornerShape(36.dp),
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(vertical = 8.dp)
+                .padding(vertical = 8.dp),
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Email,
+                imeAction = ImeAction.Next
+            )
         )
         OutlinedTextField(
-            value = "",
-            onValueChange = {},
+            value = passwordFieldState.value,
+            onValueChange = { passwordFieldState.value = it },
             label = { Text("Password") },
             leadingIcon = { Icon(Icons.Outlined.Password, "Password") },
             shape = RoundedCornerShape(36.dp),
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(vertical = 8.dp)
+                .padding(vertical = 8.dp),
+            trailingIcon = {
+                IconButton(onClick = { passwordVisibility = !passwordVisibility }) {
+                    Icon(
+                        imageVector = if (passwordVisibility) Icons.Outlined.VisibilityOff else Icons.Outlined.Visibility,
+                        ""
+                    )
+                }
+            },
+            visualTransformation = if (passwordVisibility) VisualTransformation.None else PasswordVisualTransformation(),
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Password,
+                imeAction = ImeAction.Next
+            )
         )
         OutlinedTextField(
-            value = "",
-            onValueChange = {},
+            value = confirmPasswordFieldState.value,
+            onValueChange = { confirmPasswordFieldState.value = it },
             label = { Text("Confirm password") },
             leadingIcon = { Icon(Icons.Outlined.Password, "Confirm Password") },
             shape = RoundedCornerShape(36.dp),
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(vertical = 8.dp)
+                .padding(vertical = 8.dp),
+            trailingIcon = {
+                IconButton(onClick = { passwordVisibility = !passwordVisibility }) {
+                    Icon(
+                        imageVector = if (passwordVisibility) Icons.Outlined.VisibilityOff else Icons.Outlined.Visibility,
+                        ""
+                    )
+                }
+            },
+            visualTransformation = if (passwordVisibility) VisualTransformation.None else PasswordVisualTransformation(),
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Password,
+                imeAction = ImeAction.Done
+            )
         )
         Button(
-            onClick = {},
+            onClick = {
+                val email = emailFieldState.value.trim()
+                val password = passwordFieldState.value.trim()
+                val confirmPassword = confirmPasswordFieldState.value.trim()
+                if (confirmPassword != password) {
+                    Toast.makeText(context, "Passwords must be the same", Toast.LENGTH_LONG)
+                        .show()
+                }
+                errorMessage?.let { message -> // FIX ERROR
+                    Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+                }
+                authViewModel.signUpUser(email, password)
+            },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(vertical = 8.dp)

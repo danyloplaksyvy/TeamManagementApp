@@ -1,6 +1,8 @@
 package com.example.teammanagementapp
 
+import android.content.ContentValues.TAG
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -20,6 +22,7 @@ import com.example.teammanagementapp.view.authentication.ForgotScreen
 import com.example.teammanagementapp.view.authentication.SignInScreen
 import com.example.teammanagementapp.view.authentication.SignUpScreen
 import com.example.teammanagementapp.view.authentication.StartAuthScreen
+import kotlinx.coroutines.CoroutineExceptionHandler
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

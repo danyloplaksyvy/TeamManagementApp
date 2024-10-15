@@ -45,6 +45,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.teammanagementapp.Screens
+import com.example.teammanagementapp.navigation.Graph
 import com.example.teammanagementapp.viewmodel.AuthViewModel
 
 @Composable
@@ -58,6 +59,20 @@ fun SignInScreen(navController: NavController, authViewModel: AuthViewModel = vi
 
     val errorMessage by authViewModel.errorMessage.collectAsState()
 
+    LaunchedEffect(key1 = authViewModel.signInResult) {
+        authViewModel.signInResult.collect { isSuccess ->
+            if (isSuccess) {
+                navController.navigate(Graph.MAIN) {
+                    popUpTo(Screens.SignInScreen.name) { inclusive = true }
+                    popUpTo(Screens.StartAuthScreen.name) { inclusive = true }
+                }
+            } else {
+                errorMessage?.let { message ->
+                    Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+    }
 
     Column(
         modifier = Modifier
@@ -132,9 +147,6 @@ fun SignInScreen(navController: NavController, authViewModel: AuthViewModel = vi
                 val email = emailFieldState.value.trim()
                 val password = passwordFieldState.value.trim()
 
-                errorMessage?.let { message ->
-                    Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
-                }
                 authViewModel.signInUser(email, password)
             },
             modifier = Modifier

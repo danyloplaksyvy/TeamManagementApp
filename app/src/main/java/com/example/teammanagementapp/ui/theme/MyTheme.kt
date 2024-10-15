@@ -8,17 +8,17 @@ import androidx.compose.ui.graphics.Color
 @Composable
 fun MyTheme(content: @Composable () -> Unit) {
     val colors = lightColorScheme(
-        primary = Color(49, 71, 58, 255),
+        primary = Color(101, 163, 75, 255),
         onPrimary = Color(237, 244, 242, 255),
-        secondary = Color(49, 71, 58, 255),
+        secondary = Color(145, 201, 232, 255),
         onSecondary = Color(237, 244, 242, 255),
-        tertiary = Color(132, 43, 13, 255),
+        tertiary = Color(193, 160, 107, 255),
         onTertiary = Color(237, 244, 242, 255),
 //        surface = Color(63, 99, 203, 255),
 //        onSurface = Color(5, 9, 21),
-        background = Color(245, 248, 246, 255),
-        onBackground = Color(37, 44, 37, 255),
-        outline = Color(49, 71, 58, 255),
+        background = Color(248, 249, 248, 255),
+        onBackground = Color(33, 31, 30, 255),
+        outline = Color(101, 163, 75, 255),
     )
     MaterialTheme(
         colorScheme = colors,

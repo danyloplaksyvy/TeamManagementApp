@@ -1,5 +1,6 @@
 package com.example.teammanagementapp.view.authentication
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -11,10 +12,9 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBackIosNew
 import androidx.compose.material.icons.outlined.Email
-import androidx.compose.material.icons.outlined.Password
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -22,10 +22,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -41,7 +41,11 @@ fun ForgotScreen(navController: NavController) {
     ) {
         Button(
             onClick = { navController.navigate(Screens.SignInScreen.name) },
-            Modifier.align(alignment = Alignment.TopStart)
+            Modifier
+                .align(alignment = Alignment.TopStart),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = Color(49, 71, 58, 232)
+            )
         ) {
             Icon(Icons.Default.ArrowBackIosNew, "Back")
             Text("Back")
@@ -74,7 +78,10 @@ fun ForgotScreen(navController: NavController) {
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(vertical = 8.dp),
-                keyboardOptions = KeyboardOptions( keyboardType = KeyboardType.Email, imeAction = ImeAction.Done)
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Email,
+                    imeAction = ImeAction.Done
+                )
             )
             Button(
                 onClick = { navController.navigate(Screens.StartAuthScreen.name) },

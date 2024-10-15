@@ -22,6 +22,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -29,6 +30,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.GraphicsLayerScope
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -40,6 +42,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.teammanagementapp.Screens
+import com.example.teammanagementapp.navigation.Graph
 import com.example.teammanagementapp.viewmodel.AuthViewModel
 
 @Composable
@@ -53,6 +56,22 @@ fun SignUpScreen(navController: NavController, authViewModel: AuthViewModel = vi
     var passwordVisibility by remember { mutableStateOf(false) }
 
     val errorMessage by authViewModel.errorMessage.collectAsState()
+
+    // Collect sign up result from ViewModel
+    LaunchedEffect(key1 = authViewModel.signUpResult) {
+        authViewModel.signUpResult.collect { isSuccess ->
+            if (isSuccess) {
+                navController.navigate(Graph.MAIN) {
+                    popUpTo(Screens.SignUpScreen.name) { inclusive = true }
+                    popUpTo(Screens.StartAuthScreen.name) { inclusive = true }
+                }
+            } else {
+                errorMessage?.let { message ->
+                    Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+    }
 
     Column(
         modifier = Modifier
@@ -141,9 +160,6 @@ fun SignUpScreen(navController: NavController, authViewModel: AuthViewModel = vi
                 if (confirmPassword != password) {
                     Toast.makeText(context, "Passwords must be the same", Toast.LENGTH_LONG)
                         .show()
-                }
-                errorMessage?.let { message -> // FIX ERROR
-                    Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
                 }
                 authViewModel.signUpUser(email, password)
             },

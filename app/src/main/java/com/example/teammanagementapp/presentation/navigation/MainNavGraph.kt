@@ -8,6 +8,7 @@ import com.example.teammanagementapp.Screens
 import com.example.teammanagementapp.presentation.view.main.home.MainScreen
 import com.example.teammanagementapp.presentation.view.main.profile.ProfileScreen
 import com.example.teammanagementapp.presentation.googlesignin.GoogleAuthUiClient
+import com.example.teammanagementapp.presentation.view.main.project.ProjectDetailsScreen
 import com.google.firebase.auth.FirebaseAuth
 
 fun NavGraphBuilder.mainNavGraph(
@@ -18,8 +19,8 @@ fun NavGraphBuilder.mainNavGraph(
         composable(route = Screens.MainScreen.name) {
             MainScreen(onProfileNavigate = {
                 navController.navigate(Screens.ProfileScreen.name)
-            }, onAddProjectClick = {
-                navController.navigate(Screens.AddProjectScreen.name)
+            }, onCreateProjectClick = {
+                navController.navigate(Screens.ProjectDetailsScreen.name)
             })
         }
         composable(route = Screens.ProfileScreen.name) {
@@ -30,6 +31,9 @@ fun NavGraphBuilder.mainNavGraph(
                 googleAuthUiClient = googleAuthUiClient,
                 currentUser = FirebaseAuth.getInstance().currentUser
             )
+        }
+        composable(route = Screens.ProjectDetailsScreen.name) {
+            ProjectDetailsScreen()
         }
     }
 }

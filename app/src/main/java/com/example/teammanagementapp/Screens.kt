@@ -5,5 +5,7 @@ enum class Screens {
     SignUpScreen,
     SignInScreen,
     ForgotScreen,
-    MainScreen
+    MainScreen,
+    ProfileScreen,
+    AddProjectScreen
 }

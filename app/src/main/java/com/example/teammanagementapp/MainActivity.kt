@@ -1,38 +1,43 @@
 package com.example.teammanagementapp
 
-import android.content.ContentValues.TAG
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.navigation.NavController
-import com.example.teammanagementapp.navigation.Graph
-import com.example.teammanagementapp.navigation.RootNavigationGraph
+import com.example.teammanagementapp.presentation.navigation.Graph
+import com.example.teammanagementapp.presentation.navigation.RootNavigationGraph
 import com.example.teammanagementapp.ui.theme.MyTheme
-import com.example.teammanagementapp.ui.theme.TeamManagementAppTheme
-import com.example.teammanagementapp.view.authentication.ForgotScreen
-import com.example.teammanagementapp.view.authentication.SignInScreen
-import com.example.teammanagementapp.view.authentication.SignUpScreen
-import com.example.teammanagementapp.view.authentication.StartAuthScreen
-import kotlinx.coroutines.CoroutineExceptionHandler
+import com.example.teammanagementapp.presentation.googlesignin.GoogleAuthUiClient
+import com.google.firebase.auth.FirebaseAuth
 
 class MainActivity : ComponentActivity() {
+
+    private val googleAuthUiClient by lazy {
+        GoogleAuthUiClient(
+            context = applicationContext
+        )
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
+            val startDestination = if (FirebaseAuth.getInstance().currentUser != null) {
+                Graph.MAIN
+            } else {
+                Graph.AUTH
+            }
             MyTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     Modifier.padding(innerPadding)
-                    RootNavigationGraph(startDestination = Graph.AUTH)
+                    RootNavigationGraph(
+                        startDestination = startDestination,
+                        googleAuthUiClient = googleAuthUiClient
+                    )
                 }
             }
         }

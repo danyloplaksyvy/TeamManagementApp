@@ -61,20 +61,24 @@ dependencies {
     implementation(libs.androidx.navigation.compose)
 
     // ViewModel
-    implementation (libs.androidx.lifecycle.viewmodel.compose)
+    implementation(libs.androidx.lifecycle.viewmodel.compose)
 
     // Fonts
     implementation(libs.androidx.ui.text.google.fonts)
 
-//     Import the BoM for the Firebase platform
+//     Import the Firebase platform
     implementation(platform(libs.firebase.bom))
-
-//    // Add the dependency for the Firebase Authentication library
-//    // When using the BoM, you don't specify versions in Firebase library dependencies
     implementation(libs.firebase.auth)
-//
-//    // dependency for the Google Play services library and specify its version
+    implementation(libs.firebase.firestore)
+
+    // Auth Google
     implementation(libs.play.services.auth)
+    implementation(libs.androidx.credentials)
+    implementation(libs.androidx.credentials.play.services.auth)
+    implementation(libs.googleid)
+
+    // Image from url
+    implementation(libs.coil.compose)
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)

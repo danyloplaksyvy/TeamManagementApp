@@ -1,9 +1,7 @@
-package com.example.teammanagementapp.view.authentication
+package com.example.teammanagementapp.presentation.view.authentication
 
 import android.widget.Toast
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -12,7 +10,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.DriveFileRenameOutline
 import androidx.compose.material.icons.outlined.Email
 import androidx.compose.material.icons.outlined.Password
 import androidx.compose.material.icons.outlined.Visibility
@@ -38,32 +35,32 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.teammanagementapp.Screens
-import com.example.teammanagementapp.navigation.Graph
-import com.example.teammanagementapp.viewmodel.AuthViewModel
+import com.example.teammanagementapp.presentation.navigation.Graph
+import com.example.teammanagementapp.presentation.viewmodel.AuthViewModel
 
 @Composable
-fun SignInScreen(navController: NavController, authViewModel: AuthViewModel = viewModel()) {
+fun SignUpScreen(navController: NavController, authViewModel: AuthViewModel = viewModel()) {
 
     val context = LocalContext.current
 
     val emailFieldState = remember { mutableStateOf("") }
     val passwordFieldState = remember { mutableStateOf("") }
+    val confirmPasswordFieldState = remember { mutableStateOf("") }
     var passwordVisibility by remember { mutableStateOf(false) }
 
     val errorMessage by authViewModel.errorMessage.collectAsState()
 
-    LaunchedEffect(key1 = authViewModel.signInResult) {
-        authViewModel.signInResult.collect { isSuccess ->
+    // Collect sign up result from ViewModel
+    LaunchedEffect(key1 = authViewModel.signUpResult) {
+        authViewModel.signUpResult.collect { isSuccess ->
             if (isSuccess) {
                 navController.navigate(Graph.MAIN) {
-                    popUpTo(Screens.SignInScreen.name) { inclusive = true }
+                    popUpTo(Screens.SignUpScreen.name) { inclusive = true }
                     popUpTo(Screens.StartAuthScreen.name) { inclusive = true }
                 }
             } else {
@@ -82,13 +79,13 @@ fun SignInScreen(navController: NavController, authViewModel: AuthViewModel = vi
         verticalArrangement = Arrangement.Center
     ) {
         Text(
-            "Welcome Back",
+            "Register",
             fontSize = 24.sp,
             fontWeight = FontWeight.SemiBold,
             modifier = Modifier.padding(16.dp)
         )
         Text(
-            "Login to your account",
+            "Create your account",
             fontSize = 18.sp,
             fontWeight = FontWeight.Normal,
             modifier = Modifier.padding(16.dp)
@@ -117,9 +114,30 @@ fun SignInScreen(navController: NavController, authViewModel: AuthViewModel = vi
                 .fillMaxWidth()
                 .padding(vertical = 8.dp),
             trailingIcon = {
-                IconButton(onClick = {
-                    passwordVisibility = !passwordVisibility
-                }) {
+                IconButton(onClick = { passwordVisibility = !passwordVisibility }) {
+                    Icon(
+                        imageVector = if (passwordVisibility) Icons.Outlined.VisibilityOff else Icons.Outlined.Visibility,
+                        ""
+                    )
+                }
+            },
+            visualTransformation = if (passwordVisibility) VisualTransformation.None else PasswordVisualTransformation(),
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Password,
+                imeAction = ImeAction.Next
+            )
+        )
+        OutlinedTextField(
+            value = confirmPasswordFieldState.value,
+            onValueChange = { confirmPasswordFieldState.value = it },
+            label = { Text("Confirm password") },
+            leadingIcon = { Icon(Icons.Outlined.Password, "Confirm Password") },
+            shape = RoundedCornerShape(36.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 8.dp),
+            trailingIcon = {
+                IconButton(onClick = { passwordVisibility = !passwordVisibility }) {
                     Icon(
                         imageVector = if (passwordVisibility) Icons.Outlined.VisibilityOff else Icons.Outlined.Visibility,
                         ""
@@ -132,31 +150,24 @@ fun SignInScreen(navController: NavController, authViewModel: AuthViewModel = vi
                 imeAction = ImeAction.Done
             )
         )
-        Box(
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Text(
-                text = "Forgot password?", textAlign = TextAlign.End,
-                modifier = Modifier
-                    .align(Alignment.CenterEnd)
-                    .clickable { navController.navigate(Screens.ForgotScreen.name) }
-            )
-        }
         Button(
             onClick = {
                 val email = emailFieldState.value.trim()
                 val password = passwordFieldState.value.trim()
-
-                authViewModel.signInUser(email, password)
+                val confirmPassword = confirmPasswordFieldState.value.trim()
+                if (confirmPassword != password) {
+                    Toast.makeText(context, "Passwords must be the same", Toast.LENGTH_LONG)
+                        .show()
+                }
+                authViewModel.signUpUser(email, password)
             },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(vertical = 8.dp)
-        ) { Text("Sign in") }
+        ) { Text("Sign up") }
         Row(verticalAlignment = Alignment.CenterVertically) {
-            Text("Don't have an account? ")
-            TextButton(onClick = { navController.navigate(Screens.SignUpScreen.name) }) { Text("Sign up") }
+            Text("Already have an account? ")
+            TextButton(onClick = { navController.navigate(Screens.SignInScreen.name) }) { Text("Login") }
         }
-
     }
 }

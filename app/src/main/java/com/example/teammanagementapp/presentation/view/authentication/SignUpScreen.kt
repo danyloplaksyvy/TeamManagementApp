@@ -40,7 +40,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.teammanagementapp.Screens
-import com.example.teammanagementapp.presentation.navigation.Graph
+import com.example.teammanagementapp.presentation.navigation.graphs.Graph
 import com.example.teammanagementapp.presentation.viewmodel.AuthViewModel
 
 @Composable

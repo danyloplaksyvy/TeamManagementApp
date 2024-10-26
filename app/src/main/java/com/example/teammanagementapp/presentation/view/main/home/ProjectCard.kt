@@ -23,15 +23,18 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.min
 import androidx.compose.ui.unit.sp
 import com.example.teammanagementapp.R
+import com.example.teammanagementapp.domain.model.Project
 
-@Preview(showBackground = true)
 @Composable
-fun ProjectCard() {
+fun ProjectCard(project: Project) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -62,7 +65,7 @@ fun ProjectCard() {
                         modifier = Modifier.size(64.dp)
                     )
                     Text(
-                        "Expenses Mobile App",
+                        project.name,
                         style = MaterialTheme.typography.headlineSmall.copy(fontSize = 18.sp),
                         modifier = Modifier
                             .widthIn(min = 125.dp, max = 125.dp)
@@ -104,7 +107,11 @@ fun ProjectCard() {
 //                        )
                 ) {
                     Text(
-                        "Expense mobile app development provides more freedom to banking and other financial institutions",
+                        project.description,
+                        color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.9f),
+                        minLines = 2,
+                        maxLines = 2,
+                        overflow = TextOverflow.Ellipsis
                     )
                 }
                 Row(
@@ -113,7 +120,7 @@ fun ProjectCard() {
                         .padding(8.dp),
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    Text("Team: 7 members")
+                    Text("Team: ${project.team.count()}")
 //                    Image(painter = painterResource(R.drawable.peopleworking), "Team")
                     Text("32 days")
                 }

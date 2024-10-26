@@ -8,8 +8,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.ui.Modifier
-import com.example.teammanagementapp.presentation.navigation.Graph
-import com.example.teammanagementapp.presentation.navigation.RootNavigationGraph
+import com.example.teammanagementapp.presentation.navigation.graphs.Graph
+import com.example.teammanagementapp.presentation.navigation.graphs.RootNavigationGraph
 import com.example.teammanagementapp.ui.theme.MyTheme
 import com.example.teammanagementapp.presentation.googlesignin.GoogleAuthUiClient
 import com.google.firebase.auth.FirebaseAuth

@@ -1,6 +1,5 @@
 package com.example.teammanagementapp.presentation.view.main.home
 
-import android.graphics.drawable.Icon
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -10,13 +9,13 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowRight
 import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.Group
-import androidx.compose.material.icons.outlined.KeyboardArrowRight
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -32,29 +31,33 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
-import kotlinx.coroutines.launch
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.teammanagementapp.presentation.viewmodel.ProjectViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainScreen(
+    projectViewModel: ProjectViewModel = viewModel(),
     onProfileNavigate: () -> Unit,
     onCreateProjectClick: () -> Unit
 ) {
+    val projects by projectViewModel.projects.collectAsStateWithLifecycle()
     // State to control showing the bottom sheet
     var showBottomSheet by remember { mutableStateOf(false) }
-    val sheetState = rememberModalBottomSheetState()
-    val scope = rememberCoroutineScope()
 
     val projectNameTextField = remember { mutableStateOf("") }
     val descriptionTextField = remember { mutableStateOf("") }
+
+    // Launched Effect
 
     Scaffold(topBar = {
         TopAppBar(
@@ -85,20 +88,29 @@ fun MainScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            LazyColumn {
-                items(10) {
-                    ProjectCard()
+            Column(
+                modifier = Modifier.fillMaxSize(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Top
+            ) {
+                LazyColumn {
+                    items(projects) { project ->
+                        ProjectCard(project = project)
+                    }
                 }
             }
         }
     }
+    // Adding Project
     if (showBottomSheet) {
         ModalBottomSheet(
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(top = 80.dp),
             onDismissRequest = {
                 showBottomSheet = false
             },
-            sheetState = sheetState
+            sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
         ) {
             Column(
                 modifier = Modifier
@@ -109,12 +121,12 @@ fun MainScreen(
             ) {
                 BasicTextField(
                     value = projectNameTextField.value,
-                    onValueChange = { projectNameTextField.value = it},
+                    onValueChange = { projectNameTextField.value = it },
                     maxLines = 1,
                     modifier = Modifier.padding(16.dp),
                     decorationBox = { innerTextField ->
                         Box(modifier = Modifier.fillMaxWidth()) {
-                            if (projectNameTextField.value.isEmpty()){
+                            if (projectNameTextField.value.isEmpty()) {
                                 Text(
                                     "Project's name...",
                                     color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f),
@@ -137,12 +149,15 @@ fun MainScreen(
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     Icon(Icons.Outlined.Group, "Team")
-                    Text("Choose team", color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f))
+                    Text(
+                        "Choose team",
+                        color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f)
+                    )
                     Icon(Icons.AutoMirrored.Outlined.KeyboardArrowRight, "ArrowRight")
                 }
                 BasicTextField(
                     value = descriptionTextField.value,
-                    onValueChange = { descriptionTextField.value = it},
+                    onValueChange = { descriptionTextField.value = it },
                     minLines = 5,
                     maxLines = 5,
                     modifier = Modifier.padding(16.dp),
@@ -158,7 +173,17 @@ fun MainScreen(
                             innerTextField()
                         }
                     })
-                Button(onClick = onCreateProjectClick, modifier = Modifier.fillMaxWidth().padding(16.dp)) {
+                Button(
+                    onClick = {
+                        projectViewModel.addProject(
+                            name = projectNameTextField.value,
+                            description = descriptionTextField.value
+                        )
+                        onCreateProjectClick()
+                    }, modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp)
+                ) {
                     Text("Create")
                 }
 

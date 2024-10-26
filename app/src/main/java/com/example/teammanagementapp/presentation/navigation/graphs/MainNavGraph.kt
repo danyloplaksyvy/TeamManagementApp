@@ -1,4 +1,4 @@
-package com.example.teammanagementapp.presentation.navigation
+package com.example.teammanagementapp.presentation.navigation.graphs
 
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController

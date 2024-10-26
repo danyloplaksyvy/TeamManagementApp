@@ -34,7 +34,7 @@ import com.example.teammanagementapp.R
 import com.example.teammanagementapp.domain.model.Project
 
 @Composable
-fun ProjectCard(project: Project) {
+fun ProjectCard(project: Project, onProjectClick: () -> Unit) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -49,7 +49,7 @@ fun ProjectCard(project: Project) {
     ) {
         Box(
             modifier = Modifier
-                .clickable { }
+                .clickable { onProjectClick() }
                 .padding(16.dp)
                 .wrapContentSize()
         ) {
@@ -69,7 +69,9 @@ fun ProjectCard(project: Project) {
                         style = MaterialTheme.typography.headlineSmall.copy(fontSize = 18.sp),
                         modifier = Modifier
                             .widthIn(min = 125.dp, max = 125.dp)
-                            .padding(horizontal = 8.dp)
+                            .padding(horizontal = 8.dp),
+                        maxLines = 2,
+                        overflow = TextOverflow.Ellipsis
                     )
                     Row(
                         modifier = Modifier
@@ -85,12 +87,12 @@ fun ProjectCard(project: Project) {
                         Icon(Icons.Outlined.CalendarMonth, "Calendar")
                         Column {
                             Text(
-                                "15 September",
+                                "26.10.2024",
                                 modifier = Modifier.widthIn(max = 100.dp),
                                 style = MaterialTheme.typography.labelSmall,
                             )
                             Text(
-                                "31 October",
+                                project.deadline,
                                 modifier = Modifier.widthIn(max = 100.dp),
                                 style = MaterialTheme.typography.labelSmall
                             )
@@ -109,7 +111,7 @@ fun ProjectCard(project: Project) {
                     Text(
                         project.description,
                         color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.9f),
-                        minLines = 2,
+                        minLines = 1,
                         maxLines = 2,
                         overflow = TextOverflow.Ellipsis
                     )

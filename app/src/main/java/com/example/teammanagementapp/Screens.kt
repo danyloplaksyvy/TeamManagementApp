@@ -7,6 +7,5 @@ enum class Screens {
     ForgotScreen,
     MainScreen,
     ProfileScreen,
-    AddProjectScreen,
     ProjectDetailsScreen
 }

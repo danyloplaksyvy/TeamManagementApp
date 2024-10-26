@@ -41,7 +41,7 @@ class ProjectViewModel : ViewModel() {
             name = name,
             description = description,
             team = listOf("John", "Ann", "Ron"),  // Need fix
-            deadline = "31 December 2024", // Need fix
+            deadline = "31.12.2024", // Need fix
             projectPicture = "" // Need fix
         )
 

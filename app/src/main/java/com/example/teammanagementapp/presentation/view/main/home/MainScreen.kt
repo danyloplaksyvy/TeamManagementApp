@@ -53,15 +53,14 @@ fun MainScreen(
     val projects by projectViewModel.projects.collectAsStateWithLifecycle()
     // State to control showing the bottom sheet
     var showBottomSheet by remember { mutableStateOf(false) }
+    var isEnabledButton by remember { mutableStateOf(false) }
 
     val projectNameTextField = remember { mutableStateOf("") }
     val descriptionTextField = remember { mutableStateOf("") }
 
-    // Launched Effect
-
     Scaffold(topBar = {
         TopAppBar(
-            title = { Text("Your projects(1)") },
+            title = { Text("Your projects(${projects.count()})") },
             colors = TopAppBarDefaults.topAppBarColors(MaterialTheme.colorScheme.background),
             actions = {
                 IconButton(onClick = onProfileNavigate) {
@@ -93,14 +92,16 @@ fun MainScreen(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Top
             ) {
+                // Projects list(scrollable)
                 LazyColumn {
                     items(projects) { project ->
-                        ProjectCard(project = project)
+                        ProjectCard(project = project, onProjectClick = onCreateProjectClick) // TEST VERSION
                     }
                 }
             }
         }
     }
+
     // Adding Project
     if (showBottomSheet) {
         ModalBottomSheet(
@@ -174,7 +175,9 @@ fun MainScreen(
                         }
                     })
                 Button(
+                    enabled = projectNameTextField.value.isNotEmpty(),
                     onClick = {
+                        isEnabledButton = true
                         projectViewModel.addProject(
                             name = projectNameTextField.value,
                             description = descriptionTextField.value

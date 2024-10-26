@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "185801816811",
+    "project_id": "teammanagementapp-ecdd9",
+    "storage_bucket": "teammanagementapp-ecdd9.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:185801816811:android:310c281b8dc7b7001c5cae",
+        "android_client_info": {
+          "package_name": "com.example.teammanagementapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "185801816811-t8qr2laqj4rferccg7sr1cps3l181t12.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.teammanagementapp",
+            "certificate_hash": "4cb9e24090283cf2a3a35f1b21f0c0f096200328"
+          }
+        },
+        {
+          "client_id": "185801816811-srte2l70pvvqf0ken9qja5o5g9jeh6ah.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCkKLEE9YkbhJCrxQOOnsQ65dP1jlTMvcU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "185801816811-srte2l70pvvqf0ken9qja5o5g9jeh6ah.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

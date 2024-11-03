@@ -2,7 +2,7 @@
   "project_info": {
     "project_number": "185801816811",
     "project_id": "teammanagementapp-ecdd9",
-    "storage_bucket": "teammanagementapp-ecdd9.appspot.com"
+    "storage_bucket": "teammanagementapp-ecdd9.firebasestorage.app"
   },
   "client": [
     {

@@ -17,12 +17,26 @@ fun NavGraphBuilder.mainNavGraph(
 ) {
     navigation(route = Graph.MAIN, startDestination = Screens.MainScreen.name) {
         composable(route = Screens.MainScreen.name) {
-            MainScreen(onProfileNavigate = {
-                navController.navigate(Screens.ProfileScreen.name)
-            }, onCreateProjectClick = {
-                navController.navigate(Screens.ProjectDetailsScreen.name)
-            })
+            MainScreen(
+                onProfileNavigate = { navController.navigate(Screens.ProfileScreen.name) },
+                onProjectClick = { projectId ->
+                    navController.navigate("${Screens.ProjectDetailsScreen.name}/$projectId")
+                }
+            )
         }
+        composable(route = Screens.ProjectDetailsScreen.name + "/{projectId}") { backStackEntry ->
+            val projectId = backStackEntry.arguments?.getString("projectId")
+            projectId?.let {
+                ProjectDetailsScreen(projectId = it, onBackClick = { navController.popBackStack() })
+            }
+        }
+//        composable(route = Screens.MainScreen.name) {
+//            MainScreen(onProfileNavigate = {
+//                navController.navigate(Screens.ProfileScreen.name)
+//            }, onCreateProjectClick = {
+//                navController.navigate(Screens.ProjectDetailsScreen.name)
+//            })
+//        }
         composable(route = Screens.ProfileScreen.name) {
             ProfileScreen(
                 onSignOut = {
@@ -32,8 +46,8 @@ fun NavGraphBuilder.mainNavGraph(
                 currentUser = FirebaseAuth.getInstance().currentUser
             )
         }
-        composable(route = Screens.ProjectDetailsScreen.name) {
-            ProjectDetailsScreen()
-        }
+//        composable(route = Screens.ProjectDetailsScreen.name) {
+//            ProjectDetailsScreen()
+//        }
     }
 }

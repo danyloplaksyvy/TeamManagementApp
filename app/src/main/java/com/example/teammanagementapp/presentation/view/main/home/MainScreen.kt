@@ -41,6 +41,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.teammanagementapp.domain.model.Project
 import com.example.teammanagementapp.presentation.viewmodel.ProjectViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -48,7 +49,7 @@ import com.example.teammanagementapp.presentation.viewmodel.ProjectViewModel
 fun MainScreen(
     projectViewModel: ProjectViewModel = viewModel(),
     onProfileNavigate: () -> Unit,
-    onCreateProjectClick: () -> Unit
+    onProjectClick: (String) -> Unit
 ) {
     val projects by projectViewModel.projects.collectAsStateWithLifecycle()
     // State to control showing the bottom sheet
@@ -95,7 +96,9 @@ fun MainScreen(
                 // Projects list(scrollable)
                 LazyColumn {
                     items(projects) { project ->
-                        ProjectCard(project = project, onProjectClick = onCreateProjectClick) // TEST VERSION
+                        ProjectCard(
+                            project = project,
+                            onProjectClick = { onProjectClick(project.id) })
                     }
                 }
             }
@@ -182,7 +185,7 @@ fun MainScreen(
                             name = projectNameTextField.value,
                             description = descriptionTextField.value
                         )
-                        onCreateProjectClick()
+//                        onCreateProjectClick(projects.)
                     }, modifier = Modifier
                         .fillMaxWidth()
                         .padding(16.dp)

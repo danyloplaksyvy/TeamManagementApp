@@ -12,8 +12,13 @@ import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
+
 class ProjectViewModel : ViewModel() {
     private val db = Firebase.firestore
+
+    private val _project = MutableLiveData<Project?>()
+    val project: MutableLiveData<Project?> get() = _project
+
     private val _projects = MutableStateFlow<List<Project>>(emptyList())
     val projects: StateFlow<List<Project>> = _projects
 
@@ -27,26 +32,43 @@ class ProjectViewModel : ViewModel() {
             .get()
             .addOnSuccessListener { documents ->
                 val projectList = documents.mapNotNull { document ->
-                    document.toObject(Project::class.java)
+                    document.toObject(Project::class.java)?.copy(id = document.id)
                 }
                 _projects.value = projectList
             }
             .addOnFailureListener {
-                Log.e("ProjectViewModel", "Error getting document")
+                Log.e("ProjectViewModel", "Error getting documents", it)
             }
     }
 
     fun addProject(name: String, description: String) {
         val newProject = Project(
+            id = "", // The ID will be assigned by Firestore when added
             name = name,
             description = description,
-            team = listOf("John", "Ann", "Ron"),  // Need fix
-            deadline = "31.12.2024", // Need fix
-            projectPicture = "" // Need fix
+            team = listOf("John", "Ann", "Ron"), // Example team members; adjust as needed
+            deadline = "31.12.2024", // Example deadline; adjust as needed
+            projectPicture = "" // Example placeholder for project picture
         )
 
         db.collection("projects").add(newProject)
-            .addOnSuccessListener { fetchProjects() }  // Refresh after adding project
+            .addOnSuccessListener { fetchProjects() } // Refresh the list after adding a project
             .addOnFailureListener { e -> Log.e("ProjectViewModel", "Error adding document", e) }
+    }
+
+    fun loadProject(projectId: String) {
+        // Fetch project data from Firestore using the projectId
+        db.collection("projects")
+            .document(projectId)
+            .get()
+            .addOnSuccessListener { document ->
+                if (document != null) {
+                    val project = document.toObject(Project::class.java)?.copy(id = document.id)
+                    _project.value = project
+                }
+            }
+            .addOnFailureListener { exception ->
+                Log.e("ProjectViewModel", "Error fetching project", exception)
+            }
     }
 }

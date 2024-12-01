@@ -31,7 +31,6 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -42,7 +41,11 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.teammanagementapp.domain.model.Project
+import com.example.teammanagementapp.presentation.view.main.home.components.ProjectCard
+import com.example.teammanagementapp.presentation.view.main.home.components.bottomsheet.AddProjectBottomSheet
+import com.example.teammanagementapp.presentation.view.main.home.components.bottomsheet.ManagingProjectAlertDialog
 import com.example.teammanagementapp.presentation.viewmodel.ProjectViewModel
+import com.example.teammanagementapp.utils.NotImplementedAlertDialog
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -53,11 +56,14 @@ fun MainScreen(
 ) {
     val projects by projectViewModel.projects.collectAsStateWithLifecycle()
     // State to control showing the bottom sheet
-    var showBottomSheet by remember { mutableStateOf(false) }
-    var isEnabledButton by remember { mutableStateOf(false) }
+    var showAddProjectBottomSheet by remember { mutableStateOf(false) }
+    var showNotImplementedUIAlertDialog by remember { mutableStateOf(false) }
 
-    val projectNameTextField = remember { mutableStateOf("") }
-    val descriptionTextField = remember { mutableStateOf("") }
+    var showManagingProjectAlertDialog by remember { mutableStateOf(false) }
+    var selectedProject by remember { mutableStateOf<Project?>(null) }
+
+    var projectNameTextField by remember { mutableStateOf("") }
+    var descriptionTextField by remember { mutableStateOf("") }
 
     Scaffold(topBar = {
         TopAppBar(
@@ -75,7 +81,7 @@ fun MainScreen(
     }, floatingActionButton = {
         FloatingActionButton(
             onClick = {
-                showBottomSheet = true
+                showAddProjectBottomSheet = true
             },
             containerColor = MaterialTheme.colorScheme.tertiary,
             contentColor = MaterialTheme.colorScheme.onTertiary
@@ -98,102 +104,75 @@ fun MainScreen(
                     items(projects) { project ->
                         ProjectCard(
                             project = project,
-                            onProjectClick = { onProjectClick(project.id) })
+                            onProjectClick = { onProjectClick(project.id) },
+                            onProjectLongPress = {
+                                selectedProject = it
+                                showManagingProjectAlertDialog = true
+                            })
                     }
                 }
             }
         }
     }
 
-    // Adding Project
-    if (showBottomSheet) {
-        ModalBottomSheet(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(top = 80.dp),
+    // Add Project Bottom Sheet
+    if (showAddProjectBottomSheet) {
+        AddProjectBottomSheet(
+            projectName = projectNameTextField,
+            description = descriptionTextField,
+            onProjectNameChange = { projectNameTextField = it },
+            onDescriptionChange = { descriptionTextField = it },
             onDismissRequest = {
-                showBottomSheet = false
+                showAddProjectBottomSheet = false
+                projectNameTextField = ""
+                descriptionTextField = ""
+                selectedProject = null
             },
-            sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-        ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(16.dp),
-                horizontalAlignment = Alignment.Start,
-                verticalArrangement = Arrangement.Top
-            ) {
-                BasicTextField(
-                    value = projectNameTextField.value,
-                    onValueChange = { projectNameTextField.value = it },
-                    maxLines = 1,
-                    modifier = Modifier.padding(16.dp),
-                    decorationBox = { innerTextField ->
-                        Box(modifier = Modifier.fillMaxWidth()) {
-                            if (projectNameTextField.value.isEmpty()) {
-                                Text(
-                                    "Project's name...",
-                                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f),
-                                    modifier = Modifier.fillMaxWidth()
-                                )
-                            }
-                            innerTextField()
-                        }
-                    })
-                Text(
-                    "Project access",
-                    modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 16.dp)
-                )
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clip(RoundedCornerShape(16.dp))
-                        .clickable { }
-                        .padding(16.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Icon(Icons.Outlined.Group, "Team")
-                    Text(
-                        "Choose team",
-                        color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f)
+            onCreateClick = { name, description ->
+                if (selectedProject != null) {
+                    projectViewModel.updateProject(
+                        projectId = selectedProject!!.id,
+                        name = name,
+                        description = description
                     )
-                    Icon(Icons.AutoMirrored.Outlined.KeyboardArrowRight, "ArrowRight")
+                    selectedProject = null
+                } else {
+                    projectViewModel.addProject(name, description)
                 }
-                BasicTextField(
-                    value = descriptionTextField.value,
-                    onValueChange = { descriptionTextField.value = it },
-                    minLines = 5,
-                    maxLines = 5,
-                    modifier = Modifier.padding(16.dp),
-                    decorationBox = { innerTextField ->
-                        Box(modifier = Modifier.fillMaxWidth()) {
-                            if (descriptionTextField.value.isEmpty()) {
-                                Text(
-                                    "Description...",
-                                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f),
-                                    modifier = Modifier.fillMaxWidth()
-                                )
-                            }
-                            innerTextField()
-                        }
-                    })
-                Button(
-                    enabled = projectNameTextField.value.isNotEmpty(),
-                    onClick = {
-                        isEnabledButton = true
-                        projectViewModel.addProject(
-                            name = projectNameTextField.value,
-                            description = descriptionTextField.value
-                        )
-//                        onCreateProjectClick(projects.)
-                    }, modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp)
-                ) {
-                    Text("Create")
+                showAddProjectBottomSheet = false
+                projectNameTextField = ""
+                descriptionTextField = ""
+            },
+            onParticipantsClick = { showNotImplementedUIAlertDialog = true }
+        )
+    }
+
+    if (showNotImplementedUIAlertDialog) {
+        NotImplementedAlertDialog(
+            onDismissRequest = { showNotImplementedUIAlertDialog = false },
+            onConfirmation = { showNotImplementedUIAlertDialog = false })
+    }
+
+    if (showManagingProjectAlertDialog) {
+        ManagingProjectAlertDialog(
+            onDismissRequest = {
+                showManagingProjectAlertDialog = false
+                selectedProject = null
+            },
+            onEditClick = {
+                showManagingProjectAlertDialog = false
+                selectedProject?.let {
+                    projectNameTextField = it.name
+                    descriptionTextField = it.description ?: ""
+                    showAddProjectBottomSheet = true
                 }
 
-            }
-        }
+            }, onDeleteClick = {
+                showManagingProjectAlertDialog = false
+                selectedProject?.let {
+                    projectViewModel.deleteProject(it.id)
+                    selectedProject = null
+                }
+            })
     }
 }

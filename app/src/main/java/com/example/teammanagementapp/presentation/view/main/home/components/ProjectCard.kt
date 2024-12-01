@@ -1,8 +1,10 @@
-package com.example.teammanagementapp.presentation.view.main.home
+package com.example.teammanagementapp.presentation.view.main.home.components
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -23,18 +25,16 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.min
 import androidx.compose.ui.unit.sp
 import com.example.teammanagementapp.R
 import com.example.teammanagementapp.domain.model.Project
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun ProjectCard(project: Project, onProjectClick: () -> Unit) {
+fun ProjectCard(project: Project, onProjectClick: (String) -> Unit, onProjectLongPress: (Project) -> Unit) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -49,7 +49,7 @@ fun ProjectCard(project: Project, onProjectClick: () -> Unit) {
     ) {
         Box(
             modifier = Modifier
-                .clickable { onProjectClick() }
+                .combinedClickable(onClick = { onProjectClick(project.id)}, onLongClick = { onProjectLongPress(project)})
                 .padding(16.dp)
                 .wrapContentSize()
         ) {
@@ -109,7 +109,7 @@ fun ProjectCard(project: Project, onProjectClick: () -> Unit) {
 //                        )
                 ) {
                     Text(
-                        project.description,
+                        project.description ?: "",
                         color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.9f),
                         minLines = 1,
                         maxLines = 2,

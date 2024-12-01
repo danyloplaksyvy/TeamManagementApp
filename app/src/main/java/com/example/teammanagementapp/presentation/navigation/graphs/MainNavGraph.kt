@@ -43,7 +43,8 @@ fun NavGraphBuilder.mainNavGraph(
                     navController.navigate(Graph.AUTH)
                 },
                 googleAuthUiClient = googleAuthUiClient,
-                currentUser = FirebaseAuth.getInstance().currentUser
+                currentUser = FirebaseAuth.getInstance().currentUser,
+                onBackClick = { navController.popBackStack()}
             )
         }
 //        composable(route = Screens.ProjectDetailsScreen.name) {
